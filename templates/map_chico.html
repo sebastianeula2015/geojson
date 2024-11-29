@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Mapa hospitales/centros de salud con disponibilidad de ambulacias.Ing. Sebastian Eula</title>
+    <style>
+        #map {
+            height: 600px;
+            width: 100%;
+        }
+    </style>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyASugxY_3lvt7vqsMd5V9fy1MhotyqOWDU"></script>
+</head>
+<body onload="initMap()">
+    <h1>Mapa hospitales/centros de salud con disponibilidad de ambulacias.</h1>
+    <h6>Ing. Sebastian Eula</h6>
+    <div id="map"></div>
+
+    <script>
+        function initMap() {
+            const map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: -32.88062508979373, lng: -68.87817784423227 },  // Uncuyo
+                zoom: 10
+            });
+
+            // Cargar la capa GeoJSON desde el servidor
+            map.data.loadGeoJson('/geojson');
+
+              // Agregar evento para mostrar información en los puntos
+            map.data.addListener('click', function(event) {
+                const nombre = event.feature.getProperty('nombre');
+                const descripcion = event.feature.getProperty('descripcion');
+
+                // Crear un infowindow para mostrar información
+                const infowindow = new google.maps.InfoWindow({
+                    content: `<strong>${nombre}</strong><br>${descripcion}`,
+                    position: event.latLng
+                });
+                infowindow.open(map);
+            });
+        }
+    </script>
+</body>
+</html>
+

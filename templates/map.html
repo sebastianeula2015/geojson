@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Mapa hospitales/centros de salud con disponibilidad de ambulacias.Ing. Sebastian Eula</title>
+    <style>
+        #map {
+            height: 600px;
+            width: 100%;
+        }
+    </style>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyASugxY_3lvt7vqsMd5V9fy1MhotyqOWDU"></script>
+</head>
+<body onload="initMap()">
+    <h1>Mapa hospitales/centros de salud con disponibilidad de ambulacias.</h1>
+    <h6>Ing. Sebastian Eula</h6>
+   <!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Mapa con Capas</title>
+    <style>
+        #map {
+            height: 500px;
+            width: 100%;
+        }
+    </style>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyASugxY_3lvt7vqsMd5V9fy1MhotyqOWDU"></script>
+</head>
+<body onload="initMap()">
+    <h1>Mapa con Capas de Puntos de Interés</h1>
+
+    <!-- Selector de Capas -->
+    <label for="layerSelect">Selecciona una capa:</label>
+    <select id="layerSelect">
+        <option value="ambulancias">Ambulancias</option>
+        <option value="sensores">Sensores</option>
+        <option value="centros_salud">Centros de Salud</option>
+        <option value="vacunatorios">Vacunatorios</option>
+    </select>
+    <button onclick="loadLayer()">Cargar Capa</button>
+
+    <div id="map"></div>
+
+    <script>
+        let map;
+
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                 center: { lat: -32.88062508979373, lng: -68.87817784423227 },  // Uncuyo
+                zoom: 10
+            });
+        }
+
+        // Función para cargar la capa seleccionada
+        function loadLayer() {
+            const selectedLayer = document.getElementById('layerSelect').value;
+            const geoJsonUrl = `/geojson?capa=${selectedLayer}`;
+
+            // Limpiar cualquier capa existente
+            map.data.forEach(feature => map.data.remove(feature));
+
+            // Cargar GeoJSON filtrado
+            map.data.loadGeoJson(geoJsonUrl);
+
+            // Evento para mostrar información
+            map.data.addListener('click', function(event) {
+                const nombre = event.feature.getProperty('nombre');
+                const descripcion = event.feature.getProperty('descripcion');
+                const categoria = event.feature.getProperty('categoria');
+                const imagen = event.feature.getProperty('imagen');
+                const telefono = event.feature.getProperty('telefono');
+                const capa = event.feature.getProperty('capa');
+
+                const content = `
+                    <strong>${nombre}</strong><br>
+                    <em>${categoria}</em><br>
+                    ${descripcion}<br>
+                    <strong>Capa:</strong> ${capa}<br>
+                    <img src="${imagen}" alt="${nombre}" style="width:100px; height:auto;"><br>
+                    <strong>Teléfono:</strong> ${telefono}
+                `;
+
+                const infowindow = new google.maps.InfoWindow({
+                    content: content,
+                    position: event.latLng
+                });
+                infowindow.open(map);
+            });
+        }
+    </script>
+</body>
+</html>
